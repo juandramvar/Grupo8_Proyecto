@@ -1,0 +1,50 @@
+﻿@model Grupo8_Proyecto.Palabra
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Palabra</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.pal_texto)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.pal_texto)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.pal_longitud)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.pal_longitud)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.pal_tilde)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.pal_tilde)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.pal_inicial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.pal_inicial)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.pal_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

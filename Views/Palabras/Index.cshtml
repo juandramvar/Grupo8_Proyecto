@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Grupo8_Proyecto.Palabra>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Lista de palabras</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<p>
+    @Html.ActionLink("Agregar nueva palabra", "Create", null, new { @class = "btn btn-primary" })
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.pal_texto)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.pal_longitud)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.pal_tilde)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.pal_inicial)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.pal_texto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.pal_longitud)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.pal_tilde)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.pal_inicial)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Edit", new { id = item.pal_id }) |
+                @Html.ActionLink("Detalles", "Details", new { id = item.pal_id }) |
+                @Html.ActionLink("Eliminar", "Delete", new { id = item.pal_id })
+            </td>
+        </tr>
+    }
+</table>

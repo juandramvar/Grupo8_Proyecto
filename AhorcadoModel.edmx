@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="AhorcadoModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Letra">
+          <Key>
+            <PropertyRef Name="let_id" />
+          </Key>
+          <Property Name="let_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="let_letra" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="let_escorrecta" Type="bit" />
+          <Property Name="par_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Palabra">
+          <Key>
+            <PropertyRef Name="pal_id" />
+          </Key>
+          <Property Name="pal_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="pal_texto" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="pal_longitud" Type="int" Nullable="false" />
+          <Property Name="pal_tilde" Type="bit" />
+          <Property Name="pal_inicial" Type="char" MaxLength="1" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Partida">
+          <Key>
+            <PropertyRef Name="par_id" />
+          </Key>
+          <Property Name="par_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="par_nivel" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="par_resultado" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="par_fecha" Type="datetime" />
+          <Property Name="usu_id" Type="int" Nullable="false" />
+          <Property Name="pal_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usuario">
+          <Key>
+            <PropertyRef Name="usu_id" />
+          </Key>
+          <Property Name="usu_id" Type="int" Nullable="false" />
+          <Property Name="usu_nombre" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="usu_marcador" Type="int" />
+          <Property Name="usu_ganadas" Type="int" />
+          <Property Name="usu_perdidas" Type="int" />
+        </EntityType>
+        <Association Name="FK_Letra_Partida">
+          <End Role="Partida" Type="Self.Partida" Multiplicity="1" />
+          <End Role="Letra" Type="Self.Letra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Partida">
+              <PropertyRef Name="par_id" />
+            </Principal>
+            <Dependent Role="Letra">
+              <PropertyRef Name="par_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Partida_Palabra">
+          <End Role="Palabra" Type="Self.Palabra" Multiplicity="1" />
+          <End Role="Partida" Type="Self.Partida" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Palabra">
+              <PropertyRef Name="pal_id" />
+            </Principal>
+            <Dependent Role="Partida">
+              <PropertyRef Name="pal_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Partida_Usuario">
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="1" />
+          <End Role="Partida" Type="Self.Partida" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuario">
+              <PropertyRef Name="usu_id" />
+            </Principal>
+            <Dependent Role="Partida">
+              <PropertyRef Name="usu_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AhorcadoModelStoreContainer">
+          <EntitySet Name="Letra" EntityType="Self.Letra" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Palabra" EntityType="Self.Palabra" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Partida" EntityType="Self.Partida" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Usuario" EntityType="Self.Usuario" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Letra_Partida" Association="Self.FK_Letra_Partida">
+            <End Role="Partida" EntitySet="Partida" />
+            <End Role="Letra" EntitySet="Letra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Partida_Palabra" Association="Self.FK_Partida_Palabra">
+            <End Role="Palabra" EntitySet="Palabra" />
+            <End Role="Partida" EntitySet="Partida" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Partida_Usuario" Association="Self.FK_Partida_Usuario">
+            <End Role="Usuario" EntitySet="Usuario" />
+            <End Role="Partida" EntitySet="Partida" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="AhorcadoModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Letra">
+          <Key>
+            <PropertyRef Name="let_id" />
+          </Key>
+          <Property Name="let_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="let_letra" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="let_escorrecta" Type="Boolean" />
+          <Property Name="par_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Partida" Relationship="Self.FK_Letra_Partida" FromRole="Letra" ToRole="Partida" />
+        </EntityType>
+        <EntityType Name="Palabra">
+          <Key>
+            <PropertyRef Name="pal_id" />
+          </Key>
+          <Property Name="pal_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="pal_texto" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="pal_longitud" Type="Int32" Nullable="false" />
+          <Property Name="pal_tilde" Type="Boolean" />
+          <Property Name="pal_inicial" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Partidas" Relationship="Self.FK_Partida_Palabra" FromRole="Palabra" ToRole="Partida" />
+        </EntityType>
+        <EntityType Name="Partida">
+          <Key>
+            <PropertyRef Name="par_id" />
+          </Key>
+          <Property Name="par_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="par_nivel" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="par_resultado" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="par_fecha" Type="DateTime" Precision="3" />
+          <Property Name="usu_id" Type="Int32" Nullable="false" />
+          <Property Name="pal_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Letras" Relationship="Self.FK_Letra_Partida" FromRole="Partida" ToRole="Letra" />
+          <NavigationProperty Name="Palabra" Relationship="Self.FK_Partida_Palabra" FromRole="Partida" ToRole="Palabra" />
+          <NavigationProperty Name="Usuario" Relationship="Self.FK_Partida_Usuario" FromRole="Partida" ToRole="Usuario" />
+        </EntityType>
+        <EntityType Name="Usuario">
+          <Key>
+            <PropertyRef Name="usu_id" />
+          </Key>
+          <Property Name="usu_id" Type="Int32" Nullable="false" />
+          <Property Name="usu_nombre" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="usu_marcador" Type="Int32" />
+          <Property Name="usu_ganadas" Type="Int32" />
+          <Property Name="usu_perdidas" Type="Int32" />
+          <NavigationProperty Name="Partidas" Relationship="Self.FK_Partida_Usuario" FromRole="Usuario" ToRole="Partida" />
+        </EntityType>
+        <Association Name="FK_Letra_Partida">
+          <End Role="Partida" Type="Self.Partida" Multiplicity="1" />
+          <End Role="Letra" Type="Self.Letra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Partida">
+              <PropertyRef Name="par_id" />
+            </Principal>
+            <Dependent Role="Letra">
+              <PropertyRef Name="par_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Partida_Palabra">
+          <End Role="Palabra" Type="Self.Palabra" Multiplicity="1" />
+          <End Role="Partida" Type="Self.Partida" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Palabra">
+              <PropertyRef Name="pal_id" />
+            </Principal>
+            <Dependent Role="Partida">
+              <PropertyRef Name="pal_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Partida_Usuario">
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="1" />
+          <End Role="Partida" Type="Self.Partida" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuario">
+              <PropertyRef Name="usu_id" />
+            </Principal>
+            <Dependent Role="Partida">
+              <PropertyRef Name="usu_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AhorcadoContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Letras" EntityType="Self.Letra" />
+          <EntitySet Name="Palabras" EntityType="Self.Palabra" />
+          <EntitySet Name="Partidas" EntityType="Self.Partida" />
+          <EntitySet Name="Usuarios" EntityType="Self.Usuario" />
+          <AssociationSet Name="FK_Letra_Partida" Association="Self.FK_Letra_Partida">
+            <End Role="Partida" EntitySet="Partidas" />
+            <End Role="Letra" EntitySet="Letras" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Partida_Palabra" Association="Self.FK_Partida_Palabra">
+            <End Role="Palabra" EntitySet="Palabras" />
+            <End Role="Partida" EntitySet="Partidas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Partida_Usuario" Association="Self.FK_Partida_Usuario">
+            <End Role="Usuario" EntitySet="Usuarios" />
+            <End Role="Partida" EntitySet="Partidas" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="AhorcadoModelStoreContainer" CdmEntityContainer="AhorcadoContext">
+          <EntitySetMapping Name="Letras">
+            <EntityTypeMapping TypeName="AhorcadoModel.Letra">
+              <MappingFragment StoreEntitySet="Letra">
+                <ScalarProperty Name="let_id" ColumnName="let_id" />
+                <ScalarProperty Name="let_letra" ColumnName="let_letra" />
+                <ScalarProperty Name="let_escorrecta" ColumnName="let_escorrecta" />
+                <ScalarProperty Name="par_id" ColumnName="par_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Palabras">
+            <EntityTypeMapping TypeName="AhorcadoModel.Palabra">
+              <MappingFragment StoreEntitySet="Palabra">
+                <ScalarProperty Name="pal_id" ColumnName="pal_id" />
+                <ScalarProperty Name="pal_texto" ColumnName="pal_texto" />
+                <ScalarProperty Name="pal_longitud" ColumnName="pal_longitud" />
+                <ScalarProperty Name="pal_tilde" ColumnName="pal_tilde" />
+                <ScalarProperty Name="pal_inicial" ColumnName="pal_inicial" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Partidas">
+            <EntityTypeMapping TypeName="AhorcadoModel.Partida">
+              <MappingFragment StoreEntitySet="Partida">
+                <ScalarProperty Name="par_id" ColumnName="par_id" />
+                <ScalarProperty Name="par_nivel" ColumnName="par_nivel" />
+                <ScalarProperty Name="par_resultado" ColumnName="par_resultado" />
+                <ScalarProperty Name="par_fecha" ColumnName="par_fecha" />
+                <ScalarProperty Name="usu_id" ColumnName="usu_id" />
+                <ScalarProperty Name="pal_id" ColumnName="pal_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Usuarios">
+            <EntityTypeMapping TypeName="AhorcadoModel.Usuario">
+              <MappingFragment StoreEntitySet="Usuario">
+                <ScalarProperty Name="usu_id" ColumnName="usu_id" />
+                <ScalarProperty Name="usu_nombre" ColumnName="usu_nombre" />
+                <ScalarProperty Name="usu_marcador" ColumnName="usu_marcador" />
+                <ScalarProperty Name="usu_ganadas" ColumnName="usu_ganadas" />
+                <ScalarProperty Name="usu_perdidas" ColumnName="usu_perdidas" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

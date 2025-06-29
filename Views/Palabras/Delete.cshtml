@@ -1,0 +1,56 @@
+﻿@model Grupo8_Proyecto.Palabra
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Palabra</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.pal_texto)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.pal_texto)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.pal_longitud)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.pal_longitud)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.pal_tilde)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.pal_tilde)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.pal_inicial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.pal_inicial)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
