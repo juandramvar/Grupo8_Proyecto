@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Grupo8_Proyecto.Usuario>
+
+@{
+    ViewBag.Title = "Escalafón de Jugadores";
+}
+
+<h2>Escalafón de Jugadores</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <tr>
+            <th>Identificación</th>
+            <th>Nombre</th>
+            <th>Marcador</th>
+            <th style="text-align: center;">|</th>
+            <th>Ganadas</th>
+            <th>Perdidas</th>
+            <th></th>
+        </tr>
+
+        @foreach (var usuario in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => usuario.usu_id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => usuario.usu_nombre)
+                </td>
+                <td>
+                    <span style="@(usuario.usu_marcador >= 0 ? "color: green;" : "color: red;")">
+                        @(usuario.usu_marcador ?? 0)
+                    </span>
+                </td>
+                <td style="text-align: center; color: #ccc;">|</td>
+                <td style="color: green;">
+                    @(usuario.usu_ganadas ?? 0)
+                </td>
+                <td style="color: red;">
+                    @(usuario.usu_perdidas ?? 0)
+                </td>
+                <td>
+                    @Html.ActionLink("Detalles", "Details", new { id = usuario.usu_id })
+                </td>
+            </tr>
+        }
+    </table>
+
+    <div style="margin-top: 20px;">
+        <h4>Sistema de Puntajes:</h4>
+        <ul>
+            <li><strong>Nivel Fácil:</strong> +1 punto por victoria, -1 punto por derrota</li>
+            <li><strong>Nivel Normal:</strong> +2 puntos por victoria, -2 puntos por derrota</li>
+            <li><strong>Nivel Difícil:</strong> +3 puntos por victoria, -3 puntos por derrota</li>
+        </ul>
+
+        <p><strong>Total de jugadores:</strong> @Model.Count()</p>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <p>No hay usuarios registrados aún.</p>
+        <p>@Html.ActionLink("Crear el primer usuario", "Create", "Usuario", null, new { @class = "btn btn-primary" })</p>
+    </div>
+}
+
+<p>
+    @Html.ActionLink("Crear Nuevo Usuario", "Create", "Usuario", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Volver al Inicio", "Index", "Home", null, new { @class = "btn btn-default" })
+</p>

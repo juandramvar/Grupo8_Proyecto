@@ -1,0 +1,76 @@
+﻿@model Grupo8_Proyecto.Usuario
+
+@{
+    ViewBag.Title = "Detalles del Usuario";
+}
+
+<h2>Detalles del Usuario</h2>
+
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.usu_id)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.usu_id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.usu_nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.usu_nombre)
+        </dd>
+
+        <dt>
+            Marcador Total
+        </dt>
+        <dd>
+            <span style="@(Model.usu_marcador >= 0 ? "color: green; font-weight: bold;" : "color: red; font-weight: bold;")">
+                @(Model.usu_marcador ?? 0) puntos
+            </span>
+        </dd>
+
+        <dt>
+            Partidas Ganadas
+        </dt>
+        <dd>
+            <span style="color: green;">@(Model.usu_ganadas ?? 0)</span>
+        </dd>
+
+        <dt>
+            Partidas Perdidas
+        </dt>
+        <dd>
+            <span style="color: red;">@(Model.usu_perdidas ?? 0)</span>
+        </dd>
+
+        <dt>
+            Total de Partidas
+        </dt>
+        <dd>
+            @((Model.usu_ganadas ?? 0) + (Model.usu_perdidas ?? 0))
+        </dd>
+
+        @if ((Model.usu_ganadas ?? 0) + (Model.usu_perdidas ?? 0) > 0)
+        {
+            <dt>
+                Porcentaje de Victoria
+            </dt>
+            <dd>
+                @{
+                    var totalPartidas = (Model.usu_ganadas ?? 0) + (Model.usu_perdidas ?? 0);
+                    var porcentajeVictoria = totalPartidas > 0 ? Math.Round(((double)(Model.usu_ganadas ?? 0) / totalPartidas) * 100, 1) : 0;
+                }
+                <span style="color: @(porcentajeVictoria >= 50 ? "green" : "red");">
+                    @porcentajeVictoria%
+                </span>
+            </dd>
+        }
+    </dl>
+</div>
+
+<p>
+    @Html.ActionLink("Volver al Escalafón", "Escalafon") |
+    @Html.ActionLink("Volver al Inicio", "Index", "Home")
+</p>
