@@ -1,0 +1,401 @@
+﻿@model Grupo8_Proyecto.Controllers.PartidaViewModel
+
+@{
+    ViewBag.Title = "Jugando - " + Model.Nivel;
+}
+
+<div class="container-fluid game-container">
+    <!-- Header del juego -->
+    <div class="row game-header">
+        <div class="col-md-12">
+            <h2 class="text-center">
+                <i class="glyphicon glyphicon-user"></i> @Model.Usuario
+                <span class="nivel-badge nivel-@Model.Nivel.ToLower().Replace("á", "a").Replace("í", "i")">@Model.Nivel</span>
+            </h2>
+        </div>
+    </div>
+
+    <!-- Información del juego -->
+    <div class="row game-info">
+        <div class="col-md-4 text-center">
+            <div class="info-box">
+                <h4><i class="glyphicon glyphicon-time"></i> Tiempo</h4>
+                <div id="timer" class="timer">@(Model.TiempoLimite / 60):@(Model.TiempoLimite % 60).ToString("00")</div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="info-box">
+                <h4><i class="glyphicon glyphicon-heart"></i> Intentos</h4>
+                <div id="intentos" class="intentos">@Model.IntentosRestantes / 5</div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="info-box">
+                <h4><i class="glyphicon glyphicon-font"></i> Letras Usadas</h4>
+                <div id="letrasUsadas" class="letras-usadas">
+                    @if (Model.LetrasUsadas.Any())
+                    {
+                        string.Join(", ", Model.LetrasUsadas)
+                    }
+                    else
+                    {
+                        <span class="text-muted">Ninguna</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Palabra a adivinar -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="palabra-container">
+                <div id="palabraOculta" class="palabra-oculta">
+                    @Model.PalabraOculta
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Letras disponibles -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="letras-container">
+                <h4 class="text-center">Selecciona una letra:</h4>
+                <div class="letras-grid">
+                    @foreach (var letra in Model.LetrasDisponibles)
+                    {
+                        <button class="btn btn-letra" data-letra="@letra" onclick="seleccionarLetra('@letra')">
+                            @letra
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de nuevo intento -->
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <a href="@Url.Action("NuevoIntento", new { usuarioId = Model.UsuarioId, nivel = Model.Nivel })"
+               class="btn btn-warning btn-lg" onclick="return confirmarNuevoIntento();">
+                <i class="glyphicon glyphicon-refresh"></i> Nuevo Intento
+            </a>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-default btn-lg">
+                <i class="glyphicon glyphicon-home"></i> Volver al Inicio
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para fin del juego -->
+<div class="modal fade" id="finJuegoModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalTitle">¡Fin del Juego!</h4>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent" class="text-center">
+                    <!-- Contenido dinámico -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("NuevoIntento", new { usuarioId = Model.UsuarioId, nivel = Model.Nivel })"
+                   class="btn btn-warning">Nuevo Intento</a>
+                <a href="@Url.Action("Escalafon", "Usuario")" class="btn btn-info">Ver Escalafón</a>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Inicio</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .game-container {
+        padding: 20px;
+    }
+
+    .game-header {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .nivel-badge {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        margin-left: 10px;
+    }
+
+    .nivel-facil { background-color: #5cb85c; }
+    .nivel-normal { background-color: #f0ad4e; }
+    .nivel-dificil { background-color: #d9534f; }
+
+    .game-info {
+        margin-bottom: 30px;
+    }
+
+    .info-box {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .timer {
+        font-size: 2em;
+        font-weight: bold;
+        color: #d9534f;
+    }
+
+    .intentos {
+        font-size: 2em;
+        font-weight: bold;
+        color: #5cb85c;
+    }
+
+    .letras-usadas {
+        font-size: 1.2em;
+        color: #666;
+    }
+
+    .palabra-container {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .palabra-oculta {
+        font-size: 3em;
+        font-weight: bold;
+        letter-spacing: 10px;
+        color: #333;
+        font-family: 'Courier New', monospace;
+    }
+
+    .letras-container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    .letras-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-letra {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5em;
+        font-weight: bold;
+        border-radius: 50%;
+        border: 2px solid #337ab7;
+        background-color: #337ab7;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-letra:hover:not(:disabled) {
+        transform: scale(1.1);
+        background-color: #23527c;
+        border-color: #23527c;
+    }
+
+    .btn-letra:disabled {
+        background-color: #ccc;
+        border-color: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .btn-letra.correcta {
+        background-color: #5cb85c;
+        border-color: #5cb85c;
+        animation: pulse-green 0.6s ease-in-out;
+    }
+
+    .btn-letra.incorrecta {
+        background-color: #d9534f;
+        border-color: #d9534f;
+        animation: pulse-red 0.6s ease-in-out;
+    }
+
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+</style>
+
+<script>
+    var tiempoRestante = @Model.TiempoLimite;
+    var partidaId = @Model.PartidaId;
+    var timerInterval;
+    var juegoTerminado = false;
+
+    $(document).ready(function() {
+        iniciarTimer();
+
+        // Deshabilitar letras ya usadas
+        @foreach (var letra in Model.LetrasUsadas)
+        {
+            <text>
+            $('button[data-letra="@letra"]').prop('disabled', true).removeClass('btn-primary').addClass('btn-default');
+            </text>
+        }
+    });
+
+    function iniciarTimer() {
+        timerInterval = setInterval(function() {
+            tiempoRestante--;
+
+            var minutos = Math.floor(tiempoRestante / 60);
+            var segundos = tiempoRestante % 60;
+
+            $('#timer').text(minutos + ':' + (segundos < 10 ? '0' : '') + segundos);
+
+            // Cambiar color cuando queda poco tiempo
+            if (tiempoRestante <= 10) {
+                $('#timer').css('color', '#d9534f');
+                $('#timer').addClass('parpadeo');
+            } else if (tiempoRestante <= 30) {
+                $('#timer').css('color', '#f0ad4e');
+            }
+
+            if (tiempoRestante <= 0) {
+                terminarPorTiempo();
+            }
+        }, 1000);
+    }
+
+    function seleccionarLetra(letra) {
+        if (juegoTerminado) return;
+
+        var boton = $('button[data-letra="' + letra + '"]');
+        boton.prop('disabled', true);
+
+        $.ajax({
+            url: '@Url.Action("SeleccionarLetra", "Partida")',
+            type: 'POST',
+            data: {
+                partidaId: partidaId,
+                letra: letra
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar palabra oculta
+                    $('#palabraOculta').text(response.palabraOculta);
+
+                    // Actualizar intentos
+                    $('#intentos').text(response.intentosRestantes + ' / 5');
+
+                    // Actualizar letras usadas
+                    var letrasUsadas = $('#letrasUsadas').text();
+                    if (letrasUsadas.includes('Ninguna')) {
+                        $('#letrasUsadas').html(letra);
+                    } else {
+                        $('#letrasUsadas').append(', ' + letra);
+                    }
+
+                    // Cambiar color del botón
+                    if (response.esCorrecta) {
+                        boton.removeClass('btn-primary').addClass('btn-success correcta');
+                    } else {
+                        boton.removeClass('btn-primary').addClass('btn-danger incorrecta');
+
+                        // Cambiar color de intentos si están bajos
+                        if (response.intentosRestantes <= 2) {
+                            $('#intentos').css('color', '#d9534f');
+                        } else if (response.intentosRestantes <= 3) {
+                            $('#intentos').css('color', '#f0ad4e');
+                        }
+                    }
+
+                    // Verificar si el juego terminó
+                    if (response.juegoTerminado) {
+                        terminarJuego(response.gano, response.palabraCompleta);
+                    }
+                } else {
+                    alert(response.message);
+                    boton.prop('disabled', false);
+                }
+            },
+            error: function() {
+                alert('Error al procesar la letra seleccionada.');
+                boton.prop('disabled', false);
+            }
+        });
+    }
+
+    function terminarPorTiempo() {
+        if (juegoTerminado) return;
+
+        juegoTerminado = true;
+        clearInterval(timerInterval);
+
+        $.ajax({
+            url: '@Url.Action("TerminarPorTiempo", "Partida")',
+            type: 'POST',
+            data: { partidaId: partidaId },
+            success: function(response) {
+                if (response.success) {
+                    mostrarModalFinJuego(false, 'Se acabó el tiempo', '@Model.Palabra');
+                }
+            }
+        });
+    }
+
+    function terminarJuego(gano, palabraCompleta) {
+        juegoTerminado = true;
+        clearInterval(timerInterval);
+
+        var titulo = gano ? '¡Felicidades! ¡Ganaste!' : '¡Perdiste!';
+        mostrarModalFinJuego(gano, titulo, palabraCompleta);
+    }
+
+    function mostrarModalFinJuego(gano, titulo, palabraCompleta) {
+        var icono = gano ? 'glyphicon-ok-circle' : 'glyphicon-remove-circle';
+        var colorClase = gano ? 'text-success' : 'text-danger';
+        var mensaje = gano ? 'Has adivinado la palabra correctamente.' : 'No lograste adivinar la palabra.';
+
+        $('#modalTitle').html('<i class="glyphicon ' + icono + '"></i> ' + titulo);
+        $('#modalContent').html(
+            '<div class="' + colorClase + '">' +
+            '<h3>' + mensaje + '</h3>' +
+            '<h4>La palabra era: <strong>' + palabraCompleta + '</strong></h4>' +
+            '</div>'
+        );
+
+        // Deshabilitar todos los botones de letras
+        $('.btn-letra').prop('disabled', true);
+
+        $('#finJuegoModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
+
+    function confirmarNuevoIntento() {
+        if (!juegoTerminado) {
+            return confirm('¿Estás seguro de que quieres abandonar esta partida y comenzar una nueva? La partida actual se contará como perdida.');
+        }
+        return true;
+    }
+
+    // Clase para parpadeo cuando queda poco tiempo
+
+</script>

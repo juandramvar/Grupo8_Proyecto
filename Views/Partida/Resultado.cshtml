@@ -1,0 +1,302 @@
+﻿@model Grupo8_Proyecto.Controllers.ResultadoViewModel
+
+@{
+    ViewBag.Title = "Resultado de la Partida";
+    bool gano = Model.Resultado == "Ganada";
+}
+
+<div class="container-fluid resultado-container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="resultado-card @(gano ? "ganada" : "perdida")">
+
+                <!-- Header del resultado -->
+                <div class="resultado-header">
+                    <div class="resultado-icono">
+                        @if (gano)
+                        {
+                            <i class="glyphicon glyphicon-ok-circle"></i>
+                        }
+                        else
+                        {
+                            <i class="glyphicon glyphicon-remove-circle"></i>
+                        }
+                    </div>
+                    <h1 class="resultado-titulo">
+                        @if (gano)
+                        {
+                            <text>¡FELICIDADES!</text>
+                        }
+                        else
+                        {
+                            <text>¡PERDISTE!</text>
+                        }
+                    </h1>
+                    <p class="resultado-subtitulo">
+                        @if (gano)
+                        {
+                            <text>Has adivinado la palabra correctamente</text>
+                        }
+                        else
+                        {
+                            <text>No lograste adivinar la palabra</text>
+                        }
+                    </p>
+                </div>
+
+                <!-- Información de la partida -->
+                <div class="resultado-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="glyphicon glyphicon-user"></i>
+                                <strong>Jugador:</strong> @Model.Usuario
+                            </div>
+                            <div class="info-item">
+                                <i class="glyphicon glyphicon-signal"></i>
+                                <strong>Nivel:</strong>
+                                <span class="nivel-badge nivel-@Model.Nivel.ToLower().Replace("á", "a").Replace("í", "i")">
+                                    @Model.Nivel
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                <strong>Fecha:</strong> @Model.Fecha.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="glyphicon glyphicon-heart"></i>
+                                <strong>Intentos Usados:</strong>
+                                <span class="@(Model.IntentosUsados >= 4 ? "text-danger" : Model.IntentosUsados >= 2 ? "text-warning" : "text-success")">
+                                    @Model.IntentosUsados / 5
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <i class="glyphicon glyphicon-font"></i>
+                                <strong>Letras Usadas:</strong> @Model.LetrasUsadas.Count
+                            </div>
+                            <div class="info-item">
+                                <i class="glyphicon glyphicon-star"></i>
+                                <strong>Puntos:</strong>
+                                @{
+                                    int puntos = 0;
+                                    switch (Model.Nivel.ToLower())
+                                    {
+                                        case "fácil":
+                                        case "facil":
+                                            puntos = gano ? 1 : -1;
+                                            break;
+                                        case "normal":
+                                            puntos = gano ? 2 : -2;
+                                            break;
+                                        case "difícil":
+                                        case "dificil":
+                                            puntos = gano ? 3 : -3;
+                                            break;
+                                    }
+                                }
+                                <span class="@(puntos > 0 ? "text-success" : "text-danger")">
+                                    @(puntos > 0 ? "+" : "")@puntos
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- La palabra -->
+                <div class="palabra-resultado">
+                    <h3>La palabra era:</h3>
+                    <div class="palabra-final">@Model.Palabra</div>
+                </div>
+
+                <!-- Letras usadas en la partida -->
+                @if (Model.LetrasUsadas.Any())
+                {
+                    <div class="letras-utilizadas">
+                        <h4>Letras que seleccionaste:</h4>
+                        <div class="letras-lista">
+                            @foreach (var letra in Model.LetrasUsadas)
+                            {
+                                <span class="letra-usada">@letra</span>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Botones de acción -->
+                <div class="resultado-acciones">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <a href="@Url.Action("NuevoIntento", new { usuarioId = Model.UsuarioId, nivel = Model.Nivel })"
+                               class="btn btn-warning btn-lg">
+                                <i class="glyphicon glyphicon-refresh"></i> Jugar de Nuevo
+                            </a>
+                            <a href="@Url.Action("Create")" class="btn btn-info btn-lg">
+                                <i class="glyphicon glyphicon-plus"></i> Nueva Partida
+                            </a>
+                            <a href="@Url.Action("Escalafon", "Usuario")" class="btn btn-success btn-lg">
+                                <i class="glyphicon glyphicon-list"></i> Ver Escalafón
+                            </a>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-lg">
+                                <i class="glyphicon glyphicon-home"></i> Inicio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+
+    .resultado-container {
+        animation: slideInUp 0.6s ease-out;
+    }
+
+    .resultado-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .resultado-header {
+        padding: 40px;
+        text-align: center;
+        position: relative;
+    }
+
+    .resultado-card.ganada .resultado-header {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: white;
+    }
+
+    .resultado-card.perdida .resultado-header {
+        background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+        color: white;
+    }
+
+    .resultado-icono {
+        font-size: 4em;
+        margin-bottom: 20px;
+        animation: bounceIn 0.8s ease-out 0.2s both;
+    }
+
+    .resultado-titulo {
+        font-size: 3em;
+        font-weight: bold;
+        margin: 0 0 10px 0;
+        animation: fadeInUp 0.6s ease-out 0.4s both;
+    }
+
+    .resultado-subtitulo {
+        font-size: 1.2em;
+        margin: 0;
+        opacity: 0.9;
+        animation: fadeInUp 0.6s ease-out 0.6s both;
+    }
+
+    .resultado-info {
+        padding: 30px 40px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .info-item {
+        padding: 10px 0;
+        font-size: 1.1em;
+    }
+
+    .info-item i {
+        width: 20px;
+        margin-right: 10px;
+        color: #666;
+    }
+
+    .nivel-badge {
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.9em;
+        font-weight: bold;
+        color: white;
+    }
+
+    .nivel-facil { background-color: #5cb85c; }
+    .nivel-normal { background-color: #f0ad4e; }
+    .nivel-dificil { background-color: #d9534f; }
+
+    .palabra-resultado {
+        padding: 40px;
+        text-align: center;
+        background: white;
+    }
+
+    .palabra-resultado h3 {
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+    }
+
+    .palabra-final {
+        font-size: 4em;
+        font-weight: bold;
+        color: #333;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        animation: zoomIn 0.8s ease-out 0.8s both;
+    }
+
+    .letras-utilizadas {
+        padding: 30px 40px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .letras-utilizadas h4 {
+        color: #666;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .letras-lista {
+        text-align: center;
+    }
+
+    .letra-usada {
+        display: inline-block;
+        background: #337ab7;
+        color: white;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 50%;
+        margin: 5px;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    .resultado-acciones {
+        padding: 40px;
+        background: white;
+    }
+
+    .resultado-acciones .btn {
+        margin: 5px;
+        padding: 12px 24px;
+        font-size: 1.1em;
+    }
+
+    /* Animaciones */
+    
+</style>

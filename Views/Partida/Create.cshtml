@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "Nueva Partida";
+}
+
+<h2>Crear Nueva Partida</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            @using (Html.BeginForm("IniciarJuego", "Partida", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Configuración de la Partida</h3>
+                    </div>
+                    <div class="panel-body">
+                        <!-- Selección de Usuario -->
+                        <div class="form-group">
+                            <label for="usuarioId" class="control-label">Seleccionar Jugador:</label>
+                            <select id="usuarioId" name="usuarioId" class="form-control" required>
+                                <option value="">-- Seleccione un jugador --</option>
+                                @foreach (var usuario in (IEnumerable<SelectListItem>)ViewBag.Usuarios)
+                                {
+                                    <option value="@usuario.Value">@usuario.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Selección de Nivel -->
+                        <div class="form-group">
+                            <label class="control-label">Seleccionar Nivel de Dificultad:</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="radio-inline nivel-card">
+                                        <input type="radio" name="nivel" value="Fácil" required>
+                                        <div class="nivel-info facil">
+                                            <h4>FÁCIL</h4>
+                                            <p><i class="glyphicon glyphicon-time"></i> 1 minuto 30 segundos</p>
+                                            <p><i class="glyphicon glyphicon-star"></i> +1/-1 puntos</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="radio-inline nivel-card">
+                                        <input type="radio" name="nivel" value="Normal" required>
+                                        <div class="nivel-info normal">
+                                            <h4>NORMAL</h4>
+                                            <p><i class="glyphicon glyphicon-time"></i> 1 minuto</p>
+                                            <p><i class="glyphicon glyphicon-star"></i> +2/-2 puntos</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="radio-inline nivel-card">
+                                        <input type="radio" name="nivel" value="Difícil" required>
+                                        <div class="nivel-info dificil">
+                                            <h4>DIFÍCIL</h4>
+                                            <p><i class="glyphicon glyphicon-time"></i> 30 segundos</p>
+                                            <p><i class="glyphicon glyphicon-star"></i> +3/-3 puntos</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="form-group text-center">
+                            <input type="submit" value="¡Comenzar Juego!" class="btn btn-success btn-lg" />
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-default btn-lg">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .nivel-card {
+        display: block !important;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+        .nivel-card input[type="radio"] {
+            display: none;
+        }
+
+    .nivel-info {
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: #f9f9f9;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+        .nivel-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .nivel-info.facil {
+            border-color: #5cb85c;
+        }
+
+        .nivel-info.normal {
+            border-color: #f0ad4e;
+        }
+
+        .nivel-info.dificil {
+            border-color: #d9534f;
+        }
+
+    .nivel-card input[type="radio"]:checked + .nivel-info.facil {
+        background-color: #d4edda;
+        border-color: #5cb85c;
+        border-width: 3px;
+    }
+
+    .nivel-card input[type="radio"]:checked + .nivel-info.normal {
+        background-color: #fff3cd;
+        border-color: #f0ad4e;
+        border-width: 3px;
+    }
+
+    .nivel-card input[type="radio"]:checked + .nivel-info.dificil {
+        background-color: #f8d7da;
+        border-color: #d9534f;
+        border-width: 3px;
+    }
+
+    .nivel-info h4 {
+        margin: 0 0 10px 0;
+        font-weight: bold;
+    }
+
+    .nivel-info p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .panel-primary {
+        border-color: #337ab7;
+    }
+
+        .panel-primary > .panel-heading {
+            background-color: #337ab7;
+            border-color: #337ab7;
+        }
+</style>
