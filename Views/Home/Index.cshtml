@@ -1,33 +1,412 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Juego del Ahorcado";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
-
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web HostingA</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+<div class="jumbotron hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <h1 class="hero-title">
+                    <i class="glyphicon glyphicon-education"></i>
+                    Juego del Ahorcado
+                </h1>
+                <p class="hero-subtitle">
+                    ¡Demuestra tu vocabulario y habilidad con las palabras!
+                </p>
+                <p class="hero-description">
+                    Adivina la palabra secreta letra por letra antes de que se agote el tiempo.
+                    Elige tu nivel de dificultad y compite en el escalafón.
+                </p>
+            </div>
+        </div>
     </div>
-</main>
+</div>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="container">
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <i class="glyphicon glyphicon-ok-sign"></i> @TempData["Mensaje"]
+        </div>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="container">
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <i class="glyphicon glyphicon-exclamation-sign"></i> @TempData["Error"]
+        </div>
+    </div>
+}
+
+<div class="container">
+    <div class="row opciones-principales">
+
+        <!-- Opción 1: Agregar Palabra -->
+        <div class="col-md-6 col-lg-3">
+            <div class="opcion-card">
+                <div class="opcion-icon">
+                    <i class="glyphicon glyphicon-plus-sign"></i>
+                </div>
+                <h3>Agregar Palabra</h3>
+                <p>Añade nuevas palabras al diccionario del juego para hacer más variadas las partidas.</p>
+                <a href="@Url.Action("Create", "Palabras")" class="btn btn-primary btn-block">
+                    <i class="glyphicon glyphicon-pencil"></i> Agregar Palabra
+                </a>
+            </div>
+        </div>
+
+        <!-- Opción 2: Crear Usuario -->
+        <div class="col-md-6 col-lg-3">
+            <div class="opcion-card">
+                <div class="opcion-icon">
+                    <i class="glyphicon glyphicon-user"></i>
+                </div>
+                <h3>Crear Jugador</h3>
+                <p>Registra un nuevo jugador para poder participar en las partidas y aparecer en el escalafón.</p>
+                <a href="@Url.Action("Create", "Usuario")" class="btn btn-success btn-block">
+                    <i class="glyphicon glyphicon-plus"></i> Crear Jugador
+                </a>
+            </div>
+        </div>
+
+        <!-- Opción 3: Nueva Partida -->
+        <div class="col-md-6 col-lg-3">
+            <div class="opcion-card opcion-destacada">
+                <div class="opcion-icon">
+                    <i class="glyphicon glyphicon-play-circle"></i>
+                </div>
+                <h3>Nueva Partida</h3>
+                <p>¡Comienza a jugar! Selecciona un jugador, elige la dificultad y pon a prueba tu vocabulario.</p>
+                <a href="@Url.Action("Create", "Partida")" class="btn btn-warning btn-block btn-lg">
+                    <i class="glyphicon glyphicon-play"></i> ¡Jugar Ahora!
+                </a>
+            </div>
+        </div>
+
+        <!-- Opción 4: Escalafón -->
+        <div class="col-md-6 col-lg-3">
+            <div class="opcion-card">
+                <div class="opcion-icon">
+                    <i class="glyphicon glyphicon-list-alt"></i>
+                </div>
+                <h3>Escalafón</h3>
+                <p>Consulta la tabla de posiciones y ve quién es el mejor jugador del momento.</p>
+                <a href="@Url.Action("Escalafon", "Usuario")" class="btn btn-info btn-block">
+                    <i class="glyphicon glyphicon-stats"></i> Ver Escalafón
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información sobre el juego -->
+    <div class="row info-section">
+        <div class="col-md-12">
+            <div class="info-panel">
+                <h2 class="text-center">¿Cómo Jugar?</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="paso">
+                            <div class="paso-numero">1</div>
+                            <h4>Selecciona un Jugador</h4>
+                            <p>Elige el jugador registrado que va a participar en la partida.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="paso">
+                            <div class="paso-numero">2</div>
+                            <h4>Elige la Dificultad</h4>
+                            <p>Selecciona entre Fácil (90s), Normal (60s) o Difícil (30s).</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="paso">
+                            <div class="paso-numero">3</div>
+                            <h4>¡Adivina la Palabra!</h4>
+                            <p>Selecciona letras para descubrir la palabra antes de que se acabe el tiempo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de puntajes -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="puntajes-panel">
+                <h3 class="text-center">Sistema de Puntajes</h3>
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="nivel-puntaje facil">
+                            <h4>FÁCIL</h4>
+                            <p><strong>+1</strong> punto por victoria</p>
+                            <p><strong>-1</strong> punto por derrota</p>
+                            <p><i class="glyphicon glyphicon-time"></i> 1:30 minutos</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="nivel-puntaje normal">
+                            <h4>NORMAL</h4>
+                            <p><strong>+2</strong> puntos por victoria</p>
+                            <p><strong>-2</strong> puntos por derrota</p>
+                            <p><i class="glyphicon glyphicon-time"></i> 1:00 minuto</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="nivel-puntaje dificil">
+                            <h4>DIFÍCIL</h4>
+                            <p><strong>+3</strong> puntos por victoria</p>
+                            <p><strong>-3</strong> puntos por derrota</p>
+                            <p><i class="glyphicon glyphicon-time"></i> 0:30 segundos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        border: none;
+        border-radius: 0;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        margin-bottom: 40px;
+    }
+
+    .hero-title {
+        font-size: 3.5em;
+        font-weight: bold;
+        margin-bottom: 20px;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .hero-description {
+        font-size: 1.1em;
+        opacity: 0.9;
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .opciones-principales {
+        margin-bottom: 50px;
+    }
+
+    .opcion-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        height: 320px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .opcion-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .opcion-destacada {
+        border: 3px solid #f0ad4e;
+        background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+        animation: pulse-border 2s infinite;
+    }
+
+
+    .opcion-icon {
+        font-size: 4em;
+        color: #337ab7;
+        margin-bottom: 20px;
+    }
+
+    .opcion-destacada .opcion-icon {
+        color: #f0ad4e;
+    }
+
+    .opcion-card h3 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+
+    .opcion-card p {
+        color: #666;
+        font-size: 1em;
+        line-height: 1.4;
+        margin-bottom: 20px;
+        flex-grow: 1;
+    }
+
+    .info-section {
+        margin-bottom: 40px;
+    }
+
+    .info-panel {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .info-panel h2 {
+        color: #333;
+        margin-bottom: 40px;
+        font-size: 2.2em;
+        font-weight: bold;
+    }
+
+    .paso {
+        text-align: center;
+        padding: 20px 10px;
+    }
+
+    .paso-numero {
+        width: 60px;
+        height: 60px;
+        background: #337ab7;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin: 0 auto 20px auto;
+    }
+
+    .paso h4 {
+        color: #333;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .paso p {
+        color: #666;
+        font-size: 1em;
+        line-height: 1.4;
+    }
+
+    .puntajes-panel {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    .puntajes-panel h3 {
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 1.8em;
+        font-weight: bold;
+    }
+
+    .nivel-puntaje {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 25px 15px;
+        margin: 0 10px;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .nivel-puntaje:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .nivel-puntaje.facil {
+        border-color: #5cb85c;
+    }
+
+    .nivel-puntaje.normal {
+        border-color: #f0ad4e;
+    }
+
+    .nivel-puntaje.dificil {
+        border-color: #d9534f;
+    }
+
+    .nivel-puntaje h4 {
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+    }
+
+    .nivel-puntaje p {
+        margin: 8px 0;
+        color: #555;
+        font-size: 0.95em;
+    }
+
+    .nivel-puntaje.facil h4 { color: #5cb85c; }
+    .nivel-puntaje.normal h4 { color: #f0ad4e; }
+    .nivel-puntaje.dificil h4 { color: #d9534f; }
+
+ 
+
+   
+
+    /* Efectos adicionales */
+    .btn {
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .alert {
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Animación de entrada para las tarjetas
+        $('.opcion-card').each(function(index) {
+            $(this).css('animation-delay', (index * 0.1) + 's');
+            $(this).addClass('fadeInUp');
+        });
+
+        // Efecto hover mejorado para botones
+        $('.btn').hover(
+            function() {
+                $(this).addClass('animated pulse');
+            },
+            function() {
+                $(this).removeClass('animated pulse');
+            }
+        );
+    });
+
+    
+</script>
